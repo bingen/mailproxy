@@ -1,0 +1,59 @@
+version: '3.1'
+
+services:
+
+  mbsync:
+    build:
+      context: mbsync
+      args:
+        - UID=${UID}
+        - GID=${GID}
+    image: bingen/mbsync:latest
+    container_name: mbsync
+    network_mode: bridge
+    restart: always
+    volumes:
+      #- maildir:/home/mailproxy/Maildir
+      - ~/Maildir:/home/mailproxy/Maildir
+    secrets:
+      - mbsync-pwd
+    environment:
+      - IMAP_PWD_FILE=/run/secrets/mbsync-pwd
+    env_file:
+      - ./.mbsync.env
+
+  dovecot:
+    build:
+      context: dovecot
+      args:
+        - UID=${UID}
+        - GID=${GID}
+    image: bingen/dovecot:latest
+    container_name: dovecot
+    network_mode: bridge
+    restart: always
+    ports:
+      - 127.0.0.1:8143:143
+    environment:
+      - DOVECOT_PWD_FILE=/run/secrets/dovecot-pwd
+    volumes:
+      #- maildir:/home/mailproxy/Maildir
+      - ~/Maildir:/home/mailproxy/Maildir
+    secrets:
+      - dovecot-pwd
+
+# Switching to bind mount volumes instead of named ones, to be able to
+# host them under ~/, for 2 reasons:
+# - In case only home partition is encrypted, but not the whole hard disk
+# - In case /home is in a separate partition, to use that space instead of space in /var
+#volumes:
+#  maildir:
+#    driver: local
+
+secrets:
+  mbsync-pwd:
+    #external: true
+    file: ./.mbsync-pwd.txt
+  dovecot-pwd:
+    #external: true
+    file: ./.dovecot-pwd.txt

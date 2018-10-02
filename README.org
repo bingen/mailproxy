@@ -1,0 +1,73 @@
+#+TITLE: Mailproxy
+
+* Introduction
+
+This is a drop-in setup for Gnus.
+
+Based on [[https://github.com/arecker/mailman][this one]]
+See also this [[https://www.reddit.com/r/emacs/comments/5jr0kk/email_with_gnus_and_docker/][reddit post]]
+
+* Usage
+
+** General config
+
+Run =make_env.sh= to create an =.env= file which will contain your user =UID= and =GID=. You can manually change them if you want.
+
+** Sync container
+=mbsync= container will sync with your remote mail server.
+
+Create a =~/.mbsync.env= file for your credentials
+
+#+BEGIN_EXAMPLE
+IMAP_HOST=<your-mail-host>
+IMAP_USER=youremail@example.com
+#+END_EXAMPLE
+
+Create a secret (watch out your file permissions!) for your remote IMAP server password at =mbsync-pwd.txt=
+
+** IMAP container
+=dovecot= container will serve your mail previously synced by =mbsync= locally through an IMAP connection.
+
+Create a secret (watch out your file permissions!) for your local IMAP server password at =dovecot-pwd.txt=
+
+Copy your credentials in =~/.authinfo=:
+
+#+BEGIN_EXAMPLE
+  machine localhost login mailproxy password <your-dovecot-pwd> port 8143
+#+END_EXAMPLE
+
+And then encrypt it by running:
+
+#+BEGIN_SRC shell
+gpg -e ~/.authinfo
+rm ~/.authinfo
+#+END_SRC
+
+** Self signed certificate
+If your e-mail server has a self-signed certificate, you can add it with this command:
+#+BEGIN_SRC shell
+openssl s_client -connect <your-mail-host>:993 -showcerts 2>&1 < /dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sed -ne '1,/-END CERTIFICATE-/p' > mbsync/imap_server.pem
+#+END_SRC
+
+** Gmail
+If you are using Gmail, have a look at [[https://github.com/arecker/mailman/blob/master/mbsync/mbsync.conf][this config file]]
+
+** Run it!
+Run =docker-compose up -d= in this directory.
+
+** Gnus config
+Add something like this to your gnus config.
+
+#+BEGIN_SRC emacs-lisp
+  (add-to-list 'gnus-secondary-select-methods
+	'(nnimap "personal"
+	     (nnimap-stream network)
+	     (nnimap-address "localhost")
+	     (nnimap-server-port 8143)
+	     (nnimap-authenticator login)))
+#+END_SRC
+
+* TODO
+- [ ] Use swarm to be able to use external secrets instead of files
+- [ ] Convert port =8143= in =docker-compse.yml= (and whatever else is needed) into a parameter to be able to launch several instances simoultaneously
+

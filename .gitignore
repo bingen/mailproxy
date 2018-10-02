@@ -1,0 +1,6 @@
+.env
+.mbsync.env
+.mbsync-pwd.txt
+.dovecot-pwd.txt
+mbsync/imap_server.pem
+.authinfo*
