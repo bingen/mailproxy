@@ -16,7 +16,7 @@ Run =make_env.sh= to create an =.env= file which will contain your user =UID= an
 ** Sync container
 =mbsync= container will sync with your remote mail server.
 
-Create a =~/.mbsync.env= file for your credentials
+Create a =./.mbsync.env= file for your credentials
 
 #+BEGIN_EXAMPLE
 IMAP_HOST=<your-mail-host>
@@ -67,7 +67,7 @@ Add something like this to your gnus config.
 	     (nnimap-authenticator login)))
 #+END_SRC
 
-* TODO
+* TODO TODO
 - [ ] Use swarm to be able to use external secrets instead of files
 - [ ] Convert port =8143= in =docker-compse.yml= (and whatever else is needed) into a parameter to be able to launch several instances simoultaneously
 
