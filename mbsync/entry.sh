@@ -14,4 +14,9 @@ fi
 
 chown -R mailproxy:mailproxy /home/mailproxy/Maildir
 
-su -c "mbsync -a" mailproxy
+RESULT=0
+while [ ${RESULT} -eq 0 ]; do
+    su -c "mbsync -a" mailproxy
+    RESULT=$?
+    sleep 5
+done
