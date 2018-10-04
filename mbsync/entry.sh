@@ -5,7 +5,7 @@ sed -i "s|<IMAP_USER>|${IMAP_USER}|g" /home/mailproxy/.mbsyncrc
 if [ ! -z ${IMAP_PWD_FILE} -a -f ${IMAP_PWD_FILE} ]; then
     IMAP_PWD=`cat $IMAP_PWD_FILE`;
 fi
-sed -i "s|<IMAP_PASSWORD>|${IMAP_PWD}|g" /home/mailproxy/.mbsyncrc
+sed -i "s|<IMAP_PWD>|${IMAP_PWD}|g" /home/mailproxy/.mbsyncrc
 
 # use self-signed certificate
 if [ -f /home/mailproxy/imap_server.pem ]; then

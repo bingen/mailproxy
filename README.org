@@ -53,7 +53,7 @@ openssl s_client -connect <your-mail-host>:993 -showcerts 2>&1 < /dev/null | sed
 If you are using Gmail, have a look at [[https://github.com/arecker/mailman/blob/master/mbsync/mbsync.conf][this config file]]
 
 ** Run it!
-Run =docker-compose up -d= in this directory.
+Run =docker-compose up -d= in this directory. To build the image you can previously run =docker-compose build=.
 
 ** Gnus config
 Add something like this to your gnus config.
